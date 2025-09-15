@@ -1,0 +1,63 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": false,
+    "declaration": false,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "lib": ["ES2022", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["lib/*"],
+      "@config/*": ["lib/config/*"],
+      "@utils/*": ["lib/utils/*"],
+      "@handlers/*": ["lib/handlers/*"],
+      "@middleware/*": ["lib/middleware/*"],
+      "@router/*": ["lib/router/*"],
+      "@server/*": ["lib/server/*"],
+      "@response/*": ["lib/response/*"],
+      "@constants/*": ["lib/constants/*"],
+      "@tests/*": ["__tests__/*"],
+      "@helpers/*": ["__tests__/helpers/*"],
+      "@mocks/*": ["__tests__/mocks/*"],
+      "@fixtures/*": ["__tests__/fixtures/*"]
+    },
+    "types": ["node", "jest"],
+    "typeRoots": ["./node_modules/@types"],
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false
+  },
+  "include": [
+    "**/*.js",
+    "**/*.json",
+    "lib/**/*.js",
+    "server.js",
+    "scripts/**/*.js",
+    "__tests__/**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "coverage",
+    "logs",
+    "dist",
+    "*.log",
+    "**/*.min.js"
+  ],
+  "ts-node": {
+    "esm": false,
+    "compilerOptions": {
+      "module": "CommonJS",
+      "target": "ES2022"
+    }
+  }
+}
