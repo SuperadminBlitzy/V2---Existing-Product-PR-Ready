@@ -1,0 +1,53 @@
+{
+  "script": "scripts/dev.js",
+  "watch": [
+    "lib/",
+    "scripts/",
+    "server.js",
+    ".env"
+  ],
+  "ignore": [
+    "node_modules/",
+    "coverage/",
+    "logs/",
+    "__tests__/",
+    "*.test.js",
+    "*.spec.js",
+    ".git/",
+    ".gitignore",
+    "README.md",
+    "package.json",
+    "package-lock.json",
+    "docs/",
+    "*.md",
+    "*.log",
+    ".nyc_output/",
+    "jest.config.js",
+    ".eslintrc.js",
+    "tsconfig.json",
+    "nodemon.json"
+  ],
+  "ext": "js,json,env",
+  "env": {
+    "NODE_ENV": "development",
+    "LOG_LEVEL": "debug",
+    "NODEMON_RUNNING": "true",
+    "EDUCATIONAL_MODE": "true"
+  },
+  "delay": 1000,
+  "verbose": true,
+  "colours": true,
+  "restartable": "rs",
+  "legacyWatch": false,
+  "events": {
+    "start": "echo '[NODEMON] Starting tutorial server in development mode...'",
+    "crash": "echo '[NODEMON] Tutorial server crashed - investigating restart...'",
+    "restart": "echo '[NODEMON] Tutorial server restarted due to file changes'"
+  },
+  "nodeArgs": [
+    "--inspect=0.0.0.0:9229",
+    "--enable-source-maps"
+  ],
+  "signal": "SIGTERM",
+  "stdout": true
+}
