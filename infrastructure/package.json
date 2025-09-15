@@ -1,0 +1,378 @@
+{
+  "name": "nodejs-tutorial-infrastructure",
+  "version": "1.0.0",
+  "description": "Infrastructure automation and deployment management for Node.js tutorial HTTP server application. Provides comprehensive deployment strategies including direct Node.js execution, Docker containerization, and Docker Compose orchestration with integrated health monitoring, educational deployment automation, and professional infrastructure practices demonstration.",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "deploy": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh",
+    "deploy:dev": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --strategy direct --env development",
+    "deploy:docker": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --strategy docker --env production",
+    "deploy:compose": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --strategy docker-compose --env production",
+    "deploy:verbose": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --verbose",
+    "deploy:dry-run": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --dry-run --verbose",
+    "deploy:force": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --force",
+    "health-check": "chmod +x ./scripts/health-check.sh && ./scripts/health-check.sh",
+    "health:dev": "chmod +x ./scripts/health-check.sh && ./scripts/health-check.sh --host 127.0.0.1 --port 3000",
+    "health:verbose": "chmod +x ./scripts/health-check.sh && ./scripts/health-check.sh --verbose --format json",
+    "health:retry": "chmod +x ./scripts/health-check.sh && ./scripts/health-check.sh --retries 10 --retry-delay 3",
+    "health:nodejs": "chmod +x ./scripts/health-check.sh && ./scripts/health-check.sh --nodejs-fallback --verbose",
+    "docker:build": "docker build -f ./docker/Dockerfile.backend -t nodejs-tutorial:latest ../..",
+    "docker:build:no-cache": "docker build --no-cache -f ./docker/Dockerfile.backend -t nodejs-tutorial:latest ../..",
+    "docker:run": "docker run -d -p 3000:3000 --name nodejs-tutorial-server nodejs-tutorial:latest",
+    "docker:run:interactive": "docker run -it -p 3000:3000 --name nodejs-tutorial-server nodejs-tutorial:latest",
+    "docker:stop": "docker stop nodejs-tutorial-server && docker rm nodejs-tutorial-server",
+    "docker:logs": "docker logs nodejs-tutorial-server",
+    "docker:logs:follow": "docker logs -f nodejs-tutorial-server",
+    "docker:shell": "docker exec -it nodejs-tutorial-server /bin/sh",
+    "docker:inspect": "docker inspect nodejs-tutorial-server",
+    "docker:clean": "docker system prune -f && docker volume prune -f",
+    "docker:clean:all": "docker system prune -af && docker volume prune -f && docker network prune -f",
+    "compose:up": "docker-compose -f ./docker/docker-compose.yml up",
+    "compose:up:detached": "docker-compose -f ./docker/docker-compose.yml up -d",
+    "compose:up:build": "docker-compose -f ./docker/docker-compose.yml up --build",
+    "compose:down": "docker-compose -f ./docker/docker-compose.yml down",
+    "compose:down:volumes": "docker-compose -f ./docker/docker-compose.yml down -v",
+    "compose:down:all": "docker-compose -f ./docker/docker-compose.yml down -v --rmi all",
+    "compose:logs": "docker-compose -f ./docker/docker-compose.yml logs -f",
+    "compose:restart": "docker-compose -f ./docker/docker-compose.yml restart",
+    "compose:build": "docker-compose -f ./docker/docker-compose.yml build",
+    "compose:build:no-cache": "docker-compose -f ./docker/docker-compose.yml build --no-cache",
+    "compose:ps": "docker-compose -f ./docker/docker-compose.yml ps",
+    "compose:exec": "docker-compose -f ./docker/docker-compose.yml exec backend /bin/sh",
+    "compose:clean": "docker-compose -f ./docker/docker-compose.yml down -v --rmi all",
+    "infrastructure:validate": "npm run health-check && echo 'Infrastructure validation complete'",
+    "infrastructure:status": "docker ps && docker-compose -f ./docker/docker-compose.yml ps",
+    "infrastructure:monitor": "concurrently --kill-others \"npm run health:verbose\" \"npm run infrastructure:status\"",
+    "infrastructure:cleanup": "npm run docker:clean && npm run compose:clean",
+    "infrastructure:reset": "npm run infrastructure:cleanup && npm run setup",
+    "setup": "echo 'Setting up Node.js Tutorial Infrastructure...' && chmod +x ./scripts/*.sh",
+    "setup:permissions": "chmod +x ./scripts/*.sh && echo 'Script permissions configured'",
+    "setup:validate": "npm run setup && npm run health-check",
+    "tutorial": "echo 'Node.js Tutorial Infrastructure - Use npm run deploy:dev to start'",
+    "tutorial:quick-start": "echo 'Quick Start: npm run deploy:dev && npm run health-check'",
+    "tutorial:docker": "echo 'Docker Tutorial: npm run deploy:docker && npm run health:verbose'",
+    "tutorial:compose": "echo 'Docker Compose Tutorial: npm run deploy:compose && npm run infrastructure:status'",
+    "docs": "echo 'See README.md and docs/ directory for comprehensive infrastructure documentation'",
+    "docs:help": "npm run deploy -- --help && npm run health-check -- --help",
+    "test:integration": "npm run deploy:dry-run && npm run health:verbose",
+    "test:deployment": "concurrently --kill-others --success first \"npm run deploy:dev\" \"wait-on http://localhost:3000/hello\"",
+    "test:docker": "concurrently --kill-others --success first \"npm run deploy:docker\" \"wait-on http://localhost:3000/hello\"",
+    "test:health": "npm run health:retry",
+    "dev:watch": "concurrently --kill-others \"npm run deploy:dev\" \"npm run health:verbose\"",
+    "dev:monitor": "concurrently --kill-others \"npm run infrastructure:monitor\" \"npm run health:nodejs\"",
+    "preinstall": "echo 'Node.js Tutorial Infrastructure Setup - Preparing deployment automation'",
+    "postinstall": "npm run setup && echo 'Infrastructure ready! Use npm run deploy:dev to start tutorial'",
+    "prestart": "npm run setup:validate",
+    "start": "npm run deploy:dev",
+    "prestop": "echo 'Stopping infrastructure components...'",
+    "stop": "npm run infrastructure:cleanup"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0",
+    "cross-env": "^7.0.3"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "infrastructure",
+    "deployment",
+    "docker",
+    "docker-compose",
+    "automation",
+    "health-monitoring",
+    "nodejs-tutorial",
+    "educational-infrastructure",
+    "containerization",
+    "orchestration",
+    "ci-cd",
+    "infrastructure-as-code",
+    "devops",
+    "deployment-automation",
+    "monitoring",
+    "shell-scripting",
+    "bash-automation",
+    "container-management",
+    "service-orchestration",
+    "educational-devops"
+  ],
+  "author": "Node.js Tutorial Infrastructure Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nodejs-tutorial/http-server.git",
+    "directory": "infrastructure"
+  },
+  "homepage": "https://github.com/nodejs-tutorial/http-server/tree/main/infrastructure#readme",
+  "bugs": {
+    "url": "https://github.com/nodejs-tutorial/http-server/issues"
+  },
+  "infrastructure": {
+    "version": "1.0.0",
+    "project_name": "nodejs-tutorial-infrastructure",
+    "deployment_strategies": {
+      "direct": {
+        "description": "Direct Node.js deployment on host system",
+        "command": "npm run deploy:dev",
+        "prerequisites": ["Node.js 18+", "npm 8+"],
+        "educational_value": "Demonstrates basic Node.js deployment and development workflow",
+        "timeout": 120,
+        "health_check": "npm run health:dev"
+      },
+      "docker": {
+        "description": "Containerized deployment using Docker",
+        "command": "npm run deploy:docker",
+        "prerequisites": ["Docker Engine 20.10+"],
+        "educational_value": "Shows Docker containerization and production-like deployment",
+        "timeout": 300,
+        "health_check": "npm run health:verbose"
+      },
+      "docker_compose": {
+        "description": "Multi-container orchestration using Docker Compose",
+        "command": "npm run deploy:compose",
+        "prerequisites": ["Docker Engine 20.10+", "Docker Compose 2.0+"],
+        "educational_value": "Demonstrates service orchestration and infrastructure management",
+        "timeout": 400,
+        "health_check": "npm run infrastructure:status"
+      }
+    },
+    "health_monitoring": {
+      "shell_based": "Shell-based health checking using curl and standard Unix tools",
+      "nodejs_integration": "Integration with Node.js application health check script",
+      "automated_validation": "Automated deployment validation with retry logic",
+      "educational_monitoring": "Comprehensive monitoring demonstration with troubleshooting guidance",
+      "endpoints": {
+        "primary": "/hello",
+        "expected_response": "Hello world",
+        "timeout": 10,
+        "retries": 3
+      }
+    },
+    "docker_configuration": {
+      "base_image": "node:22-alpine",
+      "optimization": "Multi-stage build support and layer caching for efficient builds",
+      "security": "Non-root user execution and minimal attack surface",
+      "networking": "Localhost binding with educational network isolation",
+      "image_name": "nodejs-tutorial",
+      "container_prefix": "nodejs-tutorial"
+    },
+    "automation_features": {
+      "deployment_validation": "Automated deployment verification with health checking",
+      "rollback_procedures": "Built-in rollback capabilities for deployment failures",
+      "educational_logging": "Comprehensive logging with educational context and guidance",
+      "ci_cd_integration": "CI/CD compatible exit codes and automation-friendly interfaces"
+    },
+    "configuration": {
+      "default_port": 3000,
+      "default_host": "127.0.0.1",
+      "health_endpoint": "/hello",
+      "expected_response": "Hello world",
+      "scripts_dir": "./scripts",
+      "docker_dir": "./docker",
+      "docs_dir": "./docs"
+    }
+  },
+  "educational": {
+    "objectives": [
+      "Infrastructure as Code principles through configuration management",
+      "Container orchestration concepts using Docker and Docker Compose",
+      "Deployment automation and professional deployment practices",
+      "Health monitoring and observability in production environments",
+      "Shell scripting for infrastructure automation and operations",
+      "CI/CD integration patterns and pipeline compatibility",
+      "Multi-environment deployment strategies and configuration management"
+    ],
+    "learning_outcomes": [
+      "Docker containerization and image optimization techniques",
+      "Shell scripting for infrastructure automation and deployment",
+      "Multi-environment configuration management and deployment strategies",
+      "Troubleshooting infrastructure issues and deployment failures",
+      "Health monitoring and observability implementation",
+      "Service orchestration and container management",
+      "Infrastructure automation patterns and best practices"
+    ],
+    "practical_skills": [
+      "Docker containerization and image optimization techniques",
+      "Shell scripting for infrastructure automation and deployment",
+      "Multi-environment configuration management and deployment strategies",
+      "Troubleshooting infrastructure issues and deployment failures",
+      "CI/CD integration and automation compatibility",
+      "Infrastructure monitoring and health check implementation",
+      "Service orchestration and container lifecycle management"
+    ],
+    "professional_practices": [
+      "CI/CD integration patterns and automation compatibility",
+      "Infrastructure monitoring and health check implementation",
+      "Configuration management and environment-specific deployment",
+      "Documentation and operational procedure development",
+      "Security best practices for containerized deployments",
+      "Resource management and optimization strategies",
+      "Troubleshooting methodologies and diagnostic procedures"
+    ],
+    "target_audience": "Developers learning infrastructure automation, containerization, and DevOps practices",
+    "prerequisites": "Basic Node.js knowledge, familiarity with command line operations"
+  },
+  "getting_started": {
+    "quick_start": {
+      "description": "Fastest way to get the Node.js tutorial HTTP server running",
+      "steps": [
+        "Ensure Node.js 18+ is installed: node --version",
+        "Navigate to the infrastructure directory: cd infrastructure",
+        "Install dependencies: npm install",
+        "Start development server: npm run deploy:dev",
+        "Verify server is running: npm run health-check",
+        "Access the application at http://localhost:3000/hello"
+      ],
+      "expected_outcome": "HTTP server responding with 'Hello world' at /hello endpoint",
+      "troubleshooting": "If port 3000 is busy, the deploy script will show an error with resolution steps"
+    },
+    "docker_quick_start": {
+      "description": "Quick start using Docker containerization",
+      "prerequisites": ["Docker Engine 20.10+"],
+      "steps": [
+        "Ensure Docker is running: docker --version",
+        "Navigate to infrastructure directory: cd infrastructure",
+        "Build and run Docker container: npm run deploy:docker",
+        "Verify container health: npm run health-check",
+        "Access the application at http://localhost:3000/hello"
+      ],
+      "expected_outcome": "Containerized HTTP server responding with 'Hello world'",
+      "management_commands": {
+        "view_logs": "npm run docker:logs",
+        "stop_container": "npm run docker:stop",
+        "interactive_shell": "npm run docker:shell"
+      }
+    },
+    "docker_compose_setup": {
+      "description": "Multi-container orchestration setup using Docker Compose",
+      "prerequisites": ["Docker Engine 20.10+", "Docker Compose 2.0+"],
+      "steps": [
+        "Verify Docker Compose: docker-compose --version",
+        "Navigate to infrastructure directory: cd infrastructure",
+        "Start orchestrated services: npm run deploy:compose",
+        "Monitor service health: npm run health-check",
+        "View service status: npm run infrastructure:status"
+      ],
+      "expected_outcome": "Complete service orchestration with networking and monitoring",
+      "management_commands": {
+        "view_logs": "npm run compose:logs",
+        "restart_services": "npm run compose:restart",
+        "stop_services": "npm run compose:down"
+      }
+    }
+  },
+  "deployment_strategies": {
+    "strategy_comparison": {
+      "direct_deployment": {
+        "best_for": "Local development, tutorials, quick testing",
+        "advantages": [
+          "Fastest startup time",
+          "Direct debugging access",
+          "Minimal resource usage",
+          "No containerization overhead"
+        ],
+        "disadvantages": [
+          "Environment-dependent",
+          "No isolation",
+          "Manual dependency management"
+        ],
+        "use_cases": [
+          "Learning Node.js basics",
+          "Local development",
+          "Educational tutorials",
+          "Quick prototyping"
+        ]
+      },
+      "docker_deployment": {
+        "best_for": "Production environments, CI/CD pipelines, consistent environments",
+        "advantages": [
+          "Environment isolation",
+          "Consistent runtime",
+          "Easy deployment",
+          "Production-like setup"
+        ],
+        "disadvantages": [
+          "Container overhead",
+          "Requires Docker knowledge",
+          "More complex debugging"
+        ],
+        "use_cases": [
+          "Production deployment",
+          "CI/CD integration",
+          "Multi-user environments",
+          "Environment consistency"
+        ]
+      },
+      "docker_compose_deployment": {
+        "best_for": "Multi-service applications, infrastructure learning, orchestration demonstration",
+        "advantages": [
+          "Service orchestration",
+          "Network management",
+          "Volume persistence",
+          "Scalable architecture"
+        ],
+        "disadvantages": [
+          "Complexity overhead",
+          "Resource intensive",
+          "Learning curve"
+        ],
+        "use_cases": [
+          "Multi-service apps",
+          "Infrastructure learning",
+          "Production environments",
+          "Microservices architecture"
+        ]
+      }
+    },
+    "selection_guidance": {
+      "for_beginners": "Start with 'npm run deploy:dev' for direct deployment to focus on Node.js concepts",
+      "for_development": "Use Docker deployment to ensure consistent environment across team members",
+      "for_production": "Use Docker Compose for full orchestration with monitoring and scaling capabilities",
+      "for_learning": "Progress through all three strategies to understand deployment evolution and containerization"
+    },
+    "common_workflows": {
+      "development_cycle": [
+        "Start with direct deployment: npm run deploy:dev",
+        "Make code changes in ../src/backend/",
+        "Test changes with health checks: npm run health-check",
+        "Validate with Docker: npm run deploy:docker",
+        "Production deploy: npm run deploy:compose"
+      ],
+      "troubleshooting_workflow": [
+        "Check basic connectivity: npm run health:dev",
+        "View deployment logs: npm run docker:logs or npm run compose:logs",
+        "Validate infrastructure: npm run infrastructure:validate",
+        "Clean and restart: npm run infrastructure:cleanup then redeploy"
+      ]
+    }
+  },
+  "troubleshooting": {
+    "common_issues": {
+      "port_conflicts": "Automated port conflict detection with resolution guidance",
+      "docker_issues": "Docker Engine validation and troubleshooting procedures",
+      "permission_errors": "File permission and Docker access issue resolution",
+      "health_check_failures": "Comprehensive health check troubleshooting and validation"
+    },
+    "diagnostic_tools": {
+      "health_validation": "npm run health-check for endpoint validation",
+      "infrastructure_status": "npm run infrastructure:status for system overview",
+      "verbose_logging": "npm run deploy:verbose for detailed execution information",
+      "container_inspection": "npm run docker:shell for container debugging"
+    }
+  },
+  "integration": {
+    "ci_cd_compatibility": "Standardized exit codes and automation-friendly script interfaces",
+    "monitoring_integration": "Health check endpoints compatible with external monitoring systems",
+    "development_workflow": "Seamless integration with development tooling and IDE support",
+    "educational_tooling": "Integration with educational platforms and tutorial delivery systems"
+  },
+  "operational_procedures": {
+    "deployment_workflow": "Automated deployment with validation and health checking",
+    "maintenance_procedures": "Regular cleanup and infrastructure maintenance automation",
+    "monitoring_integration": "Continuous health monitoring with educational feedback",
+    "disaster_recovery": "Rollback procedures and failure recovery automation"
+  }
+}
