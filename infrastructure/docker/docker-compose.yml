@@ -1,0 +1,336 @@
+# =============================================================================
+# Node.js Tutorial HTTP Server - Docker Compose Orchestration Configuration
+# =============================================================================
+#
+# Docker Compose orchestration configuration for the Node.js tutorial HTTP server
+# application demonstrating containerized deployment of the simple '/hello' endpoint
+# server. This compose file defines service architecture, networking, volume
+# management, and environment configuration for educational Docker containerization
+# while maintaining the tutorial's focus on Node.js HTTP server fundamentals.
+#
+# Educational Features:
+# - Complete service orchestration for Node.js tutorial HTTP server
+# - Demonstrates Docker Compose best practices for multi-container applications
+# - Educational networking with custom bridge networks and service discovery
+# - Persistent volume management for log data across container restarts
+# - Comprehensive health monitoring and container lifecycle management
+# - Resource constraints appropriate for tutorial and learning environments
+# - Security-focused configuration with localhost-only port binding
+# - Development vs production configuration patterns
+#
+# Usage Instructions:
+# Basic Startup: docker-compose -f infrastructure/docker/docker-compose.yml up
+# Background: docker-compose -f infrastructure/docker/docker-compose.yml up -d
+# Shutdown: docker-compose -f infrastructure/docker/docker-compose.yml down
+# View Logs: docker-compose -f infrastructure/docker/docker-compose.yml logs backend
+# Health Check: docker-compose -f infrastructure/docker/docker-compose.yml ps
+#
+# Educational Objectives:
+# - Demonstrate container orchestration and service management principles
+# - Show proper Docker networking and service discovery patterns
+# - Illustrate volume management for persistent data storage
+# - Teach container health monitoring and lifecycle management
+# - Provide production-ready containerization examples for learning
+#
+# =============================================================================
+
+# Docker Compose file format version 3.8 for modern container orchestration
+# Version 3.8 provides advanced features like build secrets, health checks,
+# and comprehensive networking while maintaining broad compatibility
+version: '3.8'
+
+# =============================================================================
+# SERVICE DEFINITIONS
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Backend Service: Node.js Tutorial HTTP Server Container
+  # ---------------------------------------------------------------------------
+  # Main application service providing the Node.js HTTP server with '/hello'
+  # endpoint demonstration. Configured with comprehensive health monitoring,
+  # resource management, and educational logging for tutorial purposes.
+  backend:
+    # Service description for educational documentation
+    # Educational Purpose: Clear service identification and learning context
+    labels:
+      - "tutorial.name=nodejs-http-server"
+      - "tutorial.version=1.0.0"
+      - "tutorial.description=Educational Node.js HTTP server demonstrating /hello endpoint"
+      - "tutorial.educational=true"
+      - "tutorial.objective=Node.js HTTP server fundamentals"
+      - "service.name=backend"
+      - "service.type=http-server"
+      - "compose.service=nodejs-tutorial-backend"
+
+    # Container build configuration using multi-stage Dockerfile
+    # Educational Purpose: Demonstrates Docker build integration with Compose
+    build:
+      # Build context set to project root for complete source access
+      context: ../..
+      # Dockerfile path relative to build context
+      dockerfile: infrastructure/docker/Dockerfile.backend
+      # Target specific build stage for production deployment
+      target: final
+      # Build arguments for Node.js version and working directory configuration
+      args:
+        NODE_VERSION: "22"
+        WORKDIR: "/usr/src/app"
+      # Build labels for container metadata and educational transparency
+      labels:
+        - "tutorial.name=nodejs-http-server"
+        - "tutorial.version=1.0.0"
+        - "tutorial.description=Educational Node.js HTTP server demonstrating /hello endpoint"
+        - "tutorial.educational=true"
+        - "tutorial.objective=Node.js HTTP server fundamentals"
+
+    # Container runtime configuration for educational deployment
+    # Educational Purpose: Demonstrates professional container naming and management
+    container_name: nodejs-tutorial-backend
+    hostname: tutorial-backend
+    restart: unless-stopped
+    init: true
+    user: "nodejs-tutorial:nodejs-tutorial"
+
+    # Port mapping for HTTP server access
+    # Educational Purpose: Maps container port 3000 to host localhost:3000 for tutorial endpoint access
+    ports:
+      # Bind to localhost only for tutorial security - prevents external access
+      # Format: "host_interface:host_port:container_port"
+      - "127.0.0.1:3000:3000"
+
+    # Environment variables for container runtime configuration
+    # Educational Purpose: Demonstrates twelve-factor app configuration principles
+    environment:
+      # Application environment optimized for production container execution
+      NODE_ENV: production
+      # Server binding configuration for container networking
+      PORT: 3000
+      HOST: 0.0.0.0
+      # Logging configuration for educational monitoring and debugging
+      LOG_LEVEL: info
+      # HTTP server timeout configurations for connection management
+      SERVER_TIMEOUT: 30000
+      KEEP_ALIVE_TIMEOUT: 5000
+      REQUEST_TIMEOUT: 10000
+      # Tutorial-specific environment variables for educational context
+      TUTORIAL_MODE: docker
+      CONTAINER_NAME: nodejs-tutorial-backend
+
+    # Volume mounts for persistent data storage
+    # Educational Purpose: Demonstrates persistent log storage for educational debugging and monitoring
+    volumes:
+      # Named volume for log persistence across container restarts
+      - tutorial-logs:/usr/src/app/logs
+
+    # Health check configuration using application health script
+    # Educational Purpose: Demonstrates container health monitoring using application health check script
+    healthcheck:
+      # Health check command using Node.js health check script
+      test: ["CMD", "node", "scripts/health-check.js"]
+      # Health check timing configuration for educational monitoring
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Network configuration for service discovery and isolation
+    # Educational Purpose: Demonstrates Docker networking with named networks and service discovery
+    networks:
+      - tutorial-network
+    # Network aliases for service discovery within the tutorial network
+    # Educational Purpose: Shows DNS-based service discovery in Docker networks
+    aliases:
+      - tutorial-backend
+      - backend-service
+
+    # Resource constraints for educational environments
+    # Educational Purpose: Demonstrates resource constraints appropriate for tutorial environments
+    deploy:
+      resources:
+        limits:
+          # Memory limit appropriate for tutorial HTTP server
+          memory: 128M
+          # CPU limit to prevent resource exhaustion in learning environments
+          cpus: '0.5'
+        reservations:
+          # Reserved resources for stable tutorial performance
+          memory: 64M
+          cpus: '0.25'
+
+    # Logging configuration for educational container management
+    # Educational Purpose: Configures log rotation for educational container management
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Container dependencies and startup ordering
+    # Educational Purpose: Shows service dependency management in orchestration
+    depends_on:
+      # No external dependencies - self-contained tutorial application
+      # This section can be extended for multi-service educational examples
+
+# =============================================================================
+# NETWORK DEFINITIONS
+# =============================================================================
+
+networks:
+  # Custom bridge network for tutorial service isolation and discovery
+  # Educational Purpose: Demonstrates custom network configuration for container isolation
+  tutorial-network:
+    driver: bridge
+    name: nodejs-tutorial-network
+    # Network labels for educational identification and metadata
+    labels:
+      - "tutorial.component=networking"
+      - "tutorial.purpose=educational-networking-demonstration"
+      - "network.type=bridge"
+      - "network.scope=tutorial"
+    # IP Address Management (IPAM) configuration for educational networking
+    # Educational Purpose: Demonstrates custom network configuration for container isolation
+    ipam:
+      config:
+        # Custom subnet for tutorial network isolation
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+
+# =============================================================================
+# VOLUME DEFINITIONS
+# =============================================================================
+
+volumes:
+  # Named volume for persistent log storage across container lifecycle
+  # Educational Purpose: Demonstrates persistent volume management for log data across container restarts
+  tutorial-logs:
+    driver: local
+    name: nodejs-tutorial-logs
+    # Volume labels for educational identification and management
+    labels:
+      - "tutorial.component=storage"
+      - "tutorial.purpose=educational-log-persistence"
+      - "volume.type=local"
+      - "volume.data=application-logs"
+
+# =============================================================================
+# EDUCATIONAL USAGE EXAMPLES AND DEVELOPMENT COMMANDS
+# =============================================================================
+#
+# BASIC OPERATIONS:
+#
+# Start tutorial application with production configuration:
+# docker-compose -f infrastructure/docker/docker-compose.yml up
+#
+# Start tutorial in background (detached mode):
+# docker-compose -f infrastructure/docker/docker-compose.yml up -d
+#
+# Stop tutorial services:
+# docker-compose -f infrastructure/docker/docker-compose.yml down
+#
+# Stop and remove volumes (clean slate):
+# docker-compose -f infrastructure/docker/docker-compose.yml down -v
+#
+# Stop and remove images:
+# docker-compose -f infrastructure/docker/docker-compose.yml down --rmi all
+#
+# MONITORING AND DEBUGGING:
+#
+# View service status and health:
+# docker-compose -f infrastructure/docker/docker-compose.yml ps
+#
+# View application logs:
+# docker-compose -f infrastructure/docker/docker-compose.yml logs backend
+#
+# Follow logs in real-time:
+# docker-compose -f infrastructure/docker/docker-compose.yml logs -f backend
+#
+# Access container shell for debugging:
+# docker-compose -f infrastructure/docker/docker-compose.yml exec backend /bin/sh
+#
+# Run health check manually:
+# docker-compose -f infrastructure/docker/docker-compose.yml exec backend node scripts/health-check.js
+#
+# SCALING OPERATIONS:
+#
+# Scale backend service (educational demonstration):
+# docker-compose -f infrastructure/docker/docker-compose.yml up --scale backend=2
+# Note: Multiple instances will require load balancer for production use
+#
+# NETWORK INSPECTION:
+#
+# Inspect tutorial network configuration:
+# docker network inspect nodejs-tutorial-network
+#
+# List all networks:
+# docker network ls
+#
+# VOLUME MANAGEMENT:
+#
+# Inspect log volume:
+# docker volume inspect nodejs-tutorial-logs
+#
+# List all volumes:
+# docker volume ls
+#
+# View logs from volume:
+# docker run --rm -v nodejs-tutorial-logs:/logs alpine ls -la /logs
+#
+# DEVELOPMENT INTEGRATION:
+#
+# For development with live code reloading, create docker-compose.dev.yml:
+# services:
+#   backend:
+#     environment:
+#       NODE_ENV: development
+#       LOG_LEVEL: debug
+#     volumes:
+#       - ../../src/backend:/usr/src/app
+#     ports:
+#       - "127.0.0.1:9229:9229"  # Node.js debugger port
+#
+# Then run:
+# docker-compose -f infrastructure/docker/docker-compose.yml -f docker-compose.dev.yml up
+#
+# TESTING THE TUTORIAL APPLICATION:
+#
+# Once started, the tutorial HTTP server will be available at:
+# http://localhost:3000/hello
+#
+# Expected response: "Hello world"
+#
+# Health check endpoint:
+# The health check runs automatically every 30 seconds
+# Manual verification: curl http://localhost:3000/hello
+#
+# EDUCATIONAL VALUE:
+#
+# This Docker Compose configuration demonstrates:
+# - Container orchestration and service management principles
+# - Docker networking with custom networks and service discovery
+# - Persistent data management with named volumes
+# - Container health monitoring and lifecycle management
+# - Resource management and constraints for educational environments
+# - Security best practices with localhost-only binding and non-root execution
+# - Production-ready containerization patterns for learning
+# - Integration patterns for development and production environments
+#
+# SECURITY CONSIDERATIONS:
+#
+# - Port binding restricted to localhost (127.0.0.1) for tutorial safety
+# - Custom network provides isolation from host and other containers
+# - Non-root user execution in containers for security
+# - Resource limits prevent resource exhaustion on host system
+# - Named volumes enable controlled data persistence
+#
+# TROUBLESHOOTING:
+#
+# Common issues and solutions:
+# - Port conflict: Change host port in ports mapping if 3000 is occupied
+# - Permission errors: Ensure Docker has localhost binding permissions
+# - Build failures: Check Docker daemon status and build context availability
+# - Health check failures: Verify application startup completion
+# - Volume issues: Use 'docker volume prune' to clean orphaned volumes
+# - Network issues: Use 'docker network prune' to clean unused networks
+#
+# =============================================================================
