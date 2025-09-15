@@ -177,13 +177,25 @@ server.on('clientError', (error, socket) => {
   
   if (!socket.destroyed) {
     try {
+      // Check if it's an invalid method error - send 405 instead of 400
+      let statusCode = '400 Bad Request';
+      let responseBody = 'Bad Request';
+      let allowHeader = '';
+      
+      if (error.message.includes('Invalid method') || error.message.includes('method encountered')) {
+        statusCode = '405 Method Not Allowed';
+        responseBody = 'Method Not Allowed';
+        allowHeader = `Allow: ${Array.from(ALLOWED_METHODS).join(', ')}\r\n`;
+      }
+      
       // Send a proper HTTP response for client errors
-      const response = 'HTTP/1.1 400 Bad Request\r\n' +
+      const response = `HTTP/1.1 ${statusCode}\r\n` +
                       'Connection: close\r\n' +
                       'Content-Type: text/plain\r\n' +
-                      'Content-Length: 11\r\n' +
+                      allowHeader +
+                      `Content-Length: ${responseBody.length}\r\n` +
                       '\r\n' +
-                      'Bad Request';
+                      responseBody;
       socket.end(response);
     } catch (socketError) {
       console.error('Error sending client error response:', socketError);
