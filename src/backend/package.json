@@ -1,0 +1,142 @@
+{
+  "name": "nodejs-tutorial-http-server",
+  "version": "1.0.0",
+  "description": "Educational Node.js HTTP server demonstrating fundamental web server concepts through a simple '/hello' endpoint that returns 'Hello world'. This tutorial application showcases Node.js built-in HTTP module capabilities, request-response patterns, basic routing, and essential web development concepts without external dependencies.",
+  "main": "server.js",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "node scripts/start.js",
+    "dev": "nodemon --config nodemon.json",
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --config jest.config.js --watch",
+    "test:coverage": "jest --config jest.config.js --coverage",
+    "test:verbose": "jest --config jest.config.js --verbose",
+    "test:unit": "jest --config jest.config.js --testPathPattern=unit",
+    "test:integration": "jest --config jest.config.js --testPathPattern=integration",
+    "lint": "eslint . --config .eslintrc.js",
+    "lint:fix": "eslint . --config .eslintrc.js --fix",
+    "lint:check": "eslint . --config .eslintrc.js --max-warnings 0",
+    "health": "node scripts/health-check.js",
+    "server": "node server.js",
+    "server:prod": "NODE_ENV=production node scripts/start.js",
+    "server:dev": "NODE_ENV=development node scripts/dev.js",
+    "coverage": "node scripts/coverage.js",
+    "clean": "rm -rf coverage/ logs/ *.log",
+    "reset": "npm run clean && npm install",
+    "validate": "npm run lint:check && npm run test:coverage",
+    "prestart": "npm run health",
+    "pretest": "npm run lint:check",
+    "postinstall": "echo 'Node.js Tutorial HTTP Server setup complete. Run npm run dev to start development server.'",
+    "tutorial": "echo 'Welcome to Node.js Tutorial! Start with: npm run dev'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.5",
+    "eslint": "^8.0.0",
+    "@eslint/js": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
+  },
+  "keywords": [
+    "nodejs",
+    "tutorial",
+    "http-server",
+    "educational",
+    "learning",
+    "web-server",
+    "javascript",
+    "backend",
+    "api",
+    "beginner-friendly",
+    "hello-world",
+    "http-module",
+    "server-side",
+    "web-development"
+  ],
+  "author": "Node.js Tutorial Developer",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nodejs-tutorial/http-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nodejs-tutorial/http-server/issues"
+  },
+  "homepage": "https://github.com/nodejs-tutorial/http-server#readme",
+  "educational": {
+    "objectives": [
+      "Demonstrate Node.js HTTP server creation using built-in modules",
+      "Show fundamental request-response patterns and HTTP protocol basics",
+      "Illustrate basic routing concepts and URL path handling",
+      "Teach proper error handling and logging in Node.js applications",
+      "Demonstrate professional development workflow and tooling"
+    ],
+    "learning_outcomes": [
+      "Understanding Node.js HTTP module capabilities",
+      "Knowledge of server creation and network binding",
+      "Comprehension of HTTP request-response lifecycle",
+      "Skills in Node.js error handling and logging",
+      "Experience with development tools and testing"
+    ],
+    "target_audience": "Developers learning Node.js fundamentals and web server development",
+    "prerequisites": "Basic JavaScript knowledge and Node.js installation"
+  },
+  "nodemon": {
+    "watch": ["*.js", "lib/", "scripts/"],
+    "ext": "js,json",
+    "ignore": ["node_modules/", "coverage/", "logs/", "__tests__/"],
+    "exec": "node server.js",
+    "delay": "1000",
+    "env": {
+      "NODE_ENV": "development"
+    }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "*.js",
+      "lib/**/*.js",
+      "scripts/**/*.js",
+      "!node_modules/**",
+      "!coverage/**",
+      "!jest.config.js",
+      "!.eslintrc.js"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.js",
+      "**/?(*.)+(spec|test).js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 85,
+        "branches": 80,
+        "functions": 100,
+        "lines": 85
+      }
+    },
+    "testTimeout": 10000,
+    "verbose": true
+  },
+  "eslintConfig": {
+    "extends": ["eslint:recommended", "plugin:node/recommended"],
+    "env": {
+      "node": true,
+      "es2022": true,
+      "jest": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "off",
+      "node/no-unsupported-features/es-syntax": "off"
+    }
+  }
+}
